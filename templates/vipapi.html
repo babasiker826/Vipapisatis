@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP API'ler - Nabi System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(255, 0, 128, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 204, 255, 0.1) 0%, transparent 40%);
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #ff0080, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #ff0080, #ff8c00);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .user-details .name { font-weight: 600; color: #00ccff; }
+        .user-details .status { color: #00ff88; font-size: 0.9rem; }
+
+        .logout-btn {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6666;
+            border: 1px solid #ff4444;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* WELCOME SECTION */
+        .welcome-section {
+            text-align: center;
+            margin: 50px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(0, 204, 255, 0.1));
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '⭐';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            font-size: 200px;
+            opacity: 0.1;
+            transform: rotate(45deg);
+        }
+
+        .welcome-title {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #ff0080, #ff8c00, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-subtitle {
+            color: #aaa;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #ff0080, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* FILTER TABS */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ff0080, #ff8c00);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(255, 0, 128, 0.3);
+        }
+
+        /* API GRID */
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .api-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .api-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00ccff, #0066ff);
+        }
+
+        .api-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 204, 255, 0.5);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 80px rgba(0, 204, 255, 0.1);
+        }
+
+        .api-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .api-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ccff;
+        }
+
+        .api-category {
+            background: rgba(255, 0, 128, 0.2);
+            color: #ff66a3;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .api-desc {
+            color: #ccc;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            min-height: 50px;
+        }
+
+        .api-endpoint {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-bottom: 20px;
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .api-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #00ccff, #0066ff);
+            color: white;
+        }
+
+        .btn-open {
+            background: linear-gradient(135deg, #00ff88, #00cc44);
+            color: white;
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #ff8c00, #ff5500);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* CATEGORY SECTIONS */
+        .category-section {
+            margin: 60px 0;
+        }
+
+        .category-title {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: #ff8c00;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 50px 0;
+            margin-top: 80px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #888;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #00ccff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #ff0080;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .api-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-title {
+                font-size: 2.2rem;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">⭐ VIP API PANELİ</div>
+
+            <div class="user-info">
+                <div class="user-avatar">{{ username[0]|upper }}</div>
+                <div class="user-details">
+                    <div class="name">{{ username }}</div>
+                    <div class="status">VIP Üye • Aktif</div>
+                </div>
+                <a href="/cikis" class="logout-btn">🚪 Çıkış Yap</a>
+            </div>
+        </div>
+
+        <!-- WELCOME -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Hoş Geldiniz, {{ username }}!</h1>
+            <p class="welcome-subtitle">
+                VIP API'lerimize erişiminiz aktif. Tüm API'leri kullanabilir, kopyalayabilir ve test edebilirsiniz.
+            </p>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">{{ apis|length }}</div>
+                    <div class="stat-label">Toplam API</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">API Kategorisi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Sınırsız Kullanım</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTER TABS -->
+        <div class="filter-tabs" id="filterTabs">
+            <button class="tab-btn active" onclick="filterCategory('all')">🔍 Tümü</button>
+            <button class="tab-btn" onclick="filterCategory('Temel')">📊 Temel API'ler</button>
+            <button class="tab-btn" onclick="filterCategory('Aile')">👨‍👩‍👧‍👦 Aile API'leri</button>
+            <button class="tab-btn" onclick="filterCategory('İş')">💼 İş API'leri</button>
+            <button class="tab-btn" onclick="filterCategory('Finans')">💰 Finans API'leri</button>
+            <button class="tab-btn" onclick="filterCategory('Sağlık')">🏥 Sağlık API'leri</button>
+            <button class="tab-btn" onclick="filterCategory('Diğer')">🔧 Diğer</button>
+        </div>
+
+        <!-- API GRID -->
+        <div class="api-grid" id="apiGrid">
+            {% for api in apis %}
+            <div class="api-card" data-category="{{ api.category }}">
+                <div class="api-header">
+                    <div class="api-name">{{ api.name }}</div>
+                    <div class="api-category">{{ api.category }}</div>
+                </div>
+
+                <div class="api-desc">{{ api.desc }}</div>
+
+                <div class="api-endpoint">{{ api.endpoint }}[PARAMETRE]</div>
+
+                <div class="api-actions">
+                    <button class="action-btn btn-copy" onclick="copyApi('{{ api.endpoint }}')">
+                        📋 Kopyala
+                    </button>
+                    <button class="action-btn btn-open" onclick="openApi('{{ api.endpoint }}')">
+                        🔗 Aç
+                    </button>
+                    <button class="action-btn btn-test" onclick="testApi('{{ api.name }}')">
+                        🚀 Test
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div>© 2024 Nabi System API Servis | Tüm hakları saklıdır.</div>
+            <div class="footer-links">
+                <a href="/">Ana Sayfa</a>
+                <a href="/satin_al">Yenileme</a>
+                <a href="https://t.me/sukazatkinis" target="_blank">Destek</a>
+                <a href="/cikis">Çıkış</a>
+            </div>
+            <div style="margin-top: 20px; color: #666; font-size: 0.8rem;">
+                🔒 Güvenli Bağlantı | DDOS Korumalı | SQL Injection Engelli
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // API KOPYALAMA
+        function copyApi(endpoint) {
+            navigator.clipboard.writeText(endpoint).then(() => {
+                showNotification('✅ API endpoint kopyalandı: ' + endpoint);
+            });
+        }
+
+        // API AÇMA
+        function openApi(endpoint) {
+            window.open(endpoint + '12345678901', '_blank');
+        }
+
+        // API TEST
+        function testApi(apiName) {
+            fetch(`/api_test/${encodeURIComponent(apiName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    showNotification(`🚀 ${apiName} test ediliyor...`);
+                    setTimeout(() => {
+                        window.open(data.endpoint + '12345678901', '_blank');
+                    }, 1000);
+                })
+                .catch(error => {
+                    showNotification('❌ Test hatası: ' + error.message);
+                });
+        }
+
+        // KATEGORİ FİLTRELEME
+        function filterCategory(category) {
+            const apiCards = document.querySelectorAll('.api-card');
+            const tabs = document.querySelectorAll('.tab-btn');
+
+            // Tab'ları güncelle
+            tabs.forEach(tab => {
+                if (tab.textContent.includes(category) ||
+                    (category === 'all' && tab.textContent.includes('Tümü'))) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // Kartları filtrele
+            apiCards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 10);
+                } else {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
+                }
+            });
+        }
+
+        // NOTIFICATION SİSTEM
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                background: linear-gradient(135deg, #00ccff, #0066ff);
+                color: white;
+                padding: 18px 25px;
+                border-radius: 12px;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+                z-index: 10000;
+                animation: slideInRight 0.4s ease;
+                max-width: 400px;
+                font-weight: 600;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.2);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.4s ease';
+                setTimeout(() => notification.remove(), 400);
+            }, 4000);
+        }
+
+        // ANIMATION CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // SAYFA YÜKLENDİĞİNDE
+        document.addEventListener('DOMContentLoaded', function() {
+            // API kartlarına animasyon ekle
+            const apiCards = document.querySelectorAll('.api-card');
+            apiCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+</body>
+</html>
