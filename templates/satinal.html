@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Satın Al - Ozsoy System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(198, 119, 119, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(119, 198, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 219, 120, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            padding: 50px 0 30px;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #ff3333, #ff9966, #ff3333);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            animation: gradient 3s ease infinite;
+            text-shadow: 0 0 30px rgba(255, 51, 51, 0.3);
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .subtitle {
+            color: #ccc;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(255, 51, 51, 0.2), rgba(255, 153, 102, 0.1));
+            color: white;
+            padding: 15px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 102, 102, 0.3);
+            transition: all 0.4s;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 51, 51, 0.3), rgba(255, 153, 102, 0.2));
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(255, 51, 51, 0.3);
+            border-color: rgba(255, 102, 102, 0.5);
+        }
+
+        /* Paketler Grid */
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 60px 0;
+        }
+
+        .package-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            border-radius: 25px;
+            padding: 40px 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .package-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 102, 102, 0.5);
+            box-shadow: 0 20px 40px rgba(255, 51, 51, 0.2);
+        }
+
+        .package-card.popular {
+            border: 2px solid #ff9966;
+            background: linear-gradient(145deg, rgba(255, 153, 102, 0.15), rgba(255, 102, 102, 0.08));
+            transform: scale(1.05);
+        }
+
+        .package-card.popular::before {
+            content: '🔥 EN İYİ DEĞER';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #ff9966, #ff3333);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .package-card.premium {
+            border: 2px solid #ffd700;
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.15), rgba(255, 153, 102, 0.08));
+        }
+
+        .package-card.premium::before {
+            content: '👑 PREMIUM';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #ffd700, #ff9966);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .package-card.ultimate {
+            border: 2px solid #00ff88;
+            background: linear-gradient(145deg, rgba(0, 255, 136, 0.15), rgba(102, 255, 204, 0.08));
+        }
+
+        .package-card.ultimate::before {
+            content: '⚡ ULTIMATE';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .package-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff3333, #ff9966);
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            align-self: flex-start;
+        }
+
+        .package-card.premium .package-badge {
+            background: linear-gradient(135deg, #ffd700, #ff9966);
+        }
+
+        .package-card.ultimate .package-badge {
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+        }
+
+        .package-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .package-price {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 20px 0 10px;
+            line-height: 1;
+        }
+
+        .package-card .package-price {
+            background: linear-gradient(90deg, #ff9966, #ff3333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .package-card.premium .package-price {
+            background: linear-gradient(90deg, #ffd700, #ff9966);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .package-card.ultimate .package-price {
+            background: linear-gradient(90deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .package-period {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .package-savings {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .package-features {
+            list-style: none;
+            margin: 25px 0;
+            flex-grow: 1;
+        }
+
+        .package-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .package-features li:before {
+            content: '✓';
+            color: #ff9966;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .package-card.premium .package-features li:before {
+            color: #ffd700;
+        }
+
+        .package-card.ultimate .package-features li:before {
+            color: #00ff88;
+        }
+
+        .package-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #ff3333, #ff9966);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: auto;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .package-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 51, 51, 0.4);
+        }
+
+        .package-card.premium .package-btn {
+            background: linear-gradient(135deg, #ffd700, #ff9966);
+            color: #000;
+        }
+
+        .package-card.premium .package-btn:hover {
+            box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .package-card.ultimate .package-btn {
+            background: linear-gradient(135deg, #00ff88, #00ccff);
+            color: #000;
+        }
+
+        .package-card.ultimate .package-btn:hover {
+            box-shadow: 0 15px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        /* Telegram Box */
+        .telegram-box {
+            background: linear-gradient(135deg, rgba(255, 51, 51, 0.9), rgba(255, 153, 102, 0.9));
+            border-radius: 30px;
+            padding: 60px 40px;
+            text-align: center;
+            margin: 80px auto;
+            max-width: 700px;
+            box-shadow: 0 30px 60px rgba(255, 51, 51, 0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .telegram-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        }
+
+        .telegram-icon {
+            font-size: 5.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .telegram-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            font-weight: 800;
+        }
+
+        .telegram-username {
+            background: rgba(0,0,0,0.4);
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 30px 0;
+            border: 2px solid rgba(255,255,255,0.3);
+            position: relative;
+            z-index: 2;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            display: inline-block;
+        }
+
+        .copy-btn {
+            background: white;
+            color: #ff3333;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 25px;
+            position: relative;
+            z-index: 2;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 20px 40px rgba(255,255,255,0.3);
+        }
+
+        /* Özellikler */
+        .features-section {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border-radius: 25px;
+            padding: 50px;
+            margin: 50px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #ff9966;
+            font-weight: 800;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.03);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,102,102,0.1);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,102,102,0.3);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ff9966;
+        }
+
+        .feature-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: #ccc;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Karşılaştırma */
+        .comparison {
+            background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+            border-radius: 25px;
+            padding: 40px;
+            margin: 40px 0;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .comparison h3 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #ff9966;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #ff3333, #ff9966);
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .warning {
+            background: linear-gradient(135deg, rgba(255, 50, 50, 0.2), rgba(255, 0, 0, 0.15));
+            border-left: 5px solid #ff4444;
+            padding: 30px;
+            margin-top: 40px;
+            border-radius: 20px;
+            animation: warningPulse 2s infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { border-left-color: #ff4444; }
+            50% { border-left-color: #ff8888; }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: #888;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+        }
+
+        .currency {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ff9966;
+            vertical-align: top;
+            margin-right: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .packages-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .package-card.popular {
+                transform: none;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+            
+            .telegram-username {
+                font-size: 1.8rem;
+                padding: 15px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💎 OZSOY SYSTEM</div>
+            <div class="subtitle">Premium API Çözümleri - VIP Erişim</div>
+            <a href="/" class="back-btn">
+                <span>←</span> Ana Sayfaya Dön
+            </a>
+        </div>
+
+        <!-- Paketler -->
+        <div class="packages-grid">
+            <!-- Aylık Paket -->
+            <div class="package-card">
+                <div class="package-badge">TEMEL</div>
+                <h3 class="package-title">Aylık Paket</h3>
+                <div class="package-price">
+                    <span class="currency">₺</span>2.500
+                </div>
+                <div class="package-period">30 günlük erişim</div>
+                <ul class="package-features">
+                    <li>Tam Kimlik Sorgulama</li>
+                    <li>Adres Bilgileri</li>
+                    <li>Telefon Bağlantıları</li>
+                    <li>Günlük 200 sorgu limiti</li>
+                    <li>Standart Destek</li>
+                </ul>
+                <button class="package-btn" onclick="selectPackage('Aylık', 2500, '₺')">Hemen Al</button>
+            </div>
+
+            <!-- 3 Aylık Paket (Popüler) -->
+            <div class="package-card popular">
+                <div class="package-badge">POPÜLER</div>
+                <h3 class="package-title">3 Aylık Paket</h3>
+                <div class="package-price">
+                    <span class="currency">₺</span>5.000
+                </div>
+                <div class="package-period">90 günlük erişim</div>
+                <div class="package-savings">3 aylık ayrı alımdan %33 tasarruf!</div>
+                <ul class="package-features">
+                    <li>Tam Kimlik Sorgulama</li>
+                    <li>Adres ve Aile Bilgileri</li>
+                    <li>Telefon & IBAN Bağlantıları</li>
+                    <li>Günlük 500 sorgu limiti</li>
+                    <li>Öncelikli Destek</li>
+                    <li>Sohbet Arşivi Erişimi</li>
+                </ul>
+                <button class="package-btn" onclick="selectPackage('3 Aylık', 5000, '₺')">En İyi Teklif</button>
+            </div>
+
+            <!-- 1 Yıllık Paket -->
+            <div class="package-card premium">
+                <div class="package-badge">PREMIUM</div>
+                <h3 class="package-title">1 Yıllık Paket</h3>
+                <div class="package-price">
+                    <span class="currency">₺</span>8.500
+                </div>
+                <div class="package-period">365 günlük erişim</div>
+                <div class="package-savings">Aylık alımdan %71 tasarruf!</div>
+                <ul class="package-features">
+                    <li>Tüm API'lere Tam Erişim</li>
+                    <li>Sınırsız Aile Bilgileri</li>
+                    <li>Geçmiş Adres Kayıtları</li>
+                    <li>Günlük 1000 sorgu limiti</li>
+                    <li>7/24 Öncelikli Destek</li>
+                    <li>Özel API Endpoint'leri</li>
+                    <li>Bulk İşlem Desteği</li>
+                </ul>
+                <button class="package-btn" onclick="selectPackage('1 Yıllık', 8500, '₺')">Premium Al</button>
+            </div>
+
+            <!-- Sınırsız Paket -->
+            <div class="package-card ultimate">
+                <div class="package-badge">ULTIMATE</div>
+                <h3 class="package-title">Sınırsız Paket</h3>
+                <div class="package-price">
+                    <span class="currency">₺</span>12.000
+                </div>
+                <div class="package-period">Ömür Boyu Erişim</div>
+                <div class="package-savings">En iyi yatırım! Ömür boyu erişim</div>
+                <ul class="package-features">
+                    <li>Ömür Boyu Tam Erişim</li>
+                    <li>Sınırsız Sorgulama</li>
+                    <li>Tüm Gelecek Güncellemeler</li>
+                    <li>Özel Admin Panel</li>
+                    <li>7/24 VIP Destek Hattı</li>
+                    <li>White-label Çözümler</li>
+                    <li>API Özelleştirme</li>
+                    <li>Öncelikli Güncellemeler</li>
+                </ul>
+                <button class="package-btn" onclick="selectPackage('Sınırsız', 12000, '₺')">Ultimate Al</button>
+            </div>
+        </div>
+
+        <!-- Özellikler -->
+        <div class="features-section">
+            <h2 class="features-title">🚀 OZSOY SYSTEM ÖZELLİKLERİ</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🆔</div>
+                    <h4>Tam Kimlik Bilgileri</h4>
+                    <p>TC kimlikten tüm kayıt bilgilerine anında erişim</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📍</div>
+                    <h4>Güncel Adres Takibi</h4>
+                    <p>Son ikamet adresi ve adres geçmişi sorgulama</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍👩‍👧‍👦</div>
+                    <h4>Aile Bilgileri</h4>
+                    <p>1. derece akraba bağlantıları ve bilgileri</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h4>Telefon & IBAN</h4>
+                    <p>Kayıtlı telefon numaraları ve banka hesapları</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h4>Hızlı Sorgulama</h4>
+                    <p>1 saniyeden kısa sürede sonuç dönüşü</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h4>Güvenli API</h4>
+                    <p>256-bit SSL şifreleme ile güvenli erişim</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Karşılaştırma -->
+        <div class="comparison">
+            <h3>📊 PAKET KARŞILAŞTIRMASI</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Özellikler</th>
+                        <th>Aylık</th>
+                        <th>3 Aylık</th>
+                        <th>1 Yıllık</th>
+                        <th>Sınırsız</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Günlük Sorgu Limiti</td>
+                        <td>200</td>
+                        <td>500</td>
+                        <td>1000</td>
+                        <td>Sınırsız</td>
+                    </tr>
+                    <tr>
+                        <td>API Erişimi</td>
+                        <td>Temel</td>
+                        <td>Gelişmiş</td>
+                        <td>Premium</td>
+                        <td>Ultimate</td>
+                    </tr>
+                    <tr>
+                        <td>Destek Seviyesi</td>
+                        <td>Standart</td>
+                        <td>Öncelikli</td>
+                        <td>7/24 VIP</td>
+                        <td>7/24 VIP++</td>
+                    </tr>
+                    <tr>
+                        <td>Güncellemeler</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                        <td>Öncelikli ✓</td>
+                    </tr>
+                    <tr>
+                        <td>Bulk İşlemler</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>✓</td>
+                        <td>✓✓</td>
+                    </tr>
+                    <tr>
+                        <td>Özelleştirme</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Sınırlı</td>
+                        <td>Tam</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- İletişim -->
+        <div class="telegram-box">
+            <div class="telegram-icon">💬</div>
+            <h2 class="telegram-title">SATIN ALMAK İÇİN</h2>
+            <p>Resmi satış yetkilimiz ile iletişime geçin:</p>
+
+            <div class="telegram-username">@Satisyetkili</div>
+
+            <button class="copy-btn" onclick="copyTelegram()">
+                📋 KOPYALA VE TELEGRAM'A GİT
+            </button>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ ÖNEMLİ UYARI:</strong><br>
+            • Sadece <strong>@Satisyetkili</strong> adresinden satın alım yapınız.<br>
+            • Resmi olmayan kanallara itibar etmeyiniz.<br>
+            • Tüm ödemeler güvenli SSL şifreleme ile gerçekleşmektedir.<br>
+            • Satın alma sonrası API anahtarınız anında aktif edilecektir.
+        </div>
+
+        <footer>
+            <p>© 2024 Ozsoy System - Tüm hakları saklıdır.</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #666;">Premium API Çözümleri | Profesyonel Sorgulama Sistemleri</p>
+        </footer>
+    </div>
+
+    <script>
+        function selectPackage(packageName, price, currency) {
+            const message = `Merhaba, Ozsoy System ${packageName} paketini (${currency}${price}) satın almak istiyorum.`;
+            navigator.clipboard.writeText(message).then(() => {
+                alert(`✅ "${packageName}" paketi seçildi!\nMesaj panoya kopyalandı.\nTelegram'a yönlendiriliyorsunuz...`);
+                window.open('https://t.me/Satisyetkili', '_blank');
+            });
+        }
+
+        function copyTelegram() {
+            const username = '@Satisyetkili';
+            navigator.clipboard.writeText(username).then(() => {
+                alert('✅ Telegram kullanıcı adı kopyalandı: ' + username + '\nTelegram uygulamanıza yönlendiriliyorsunuz...');
+                window.open('https://t.me/Satisyetkili', '_blank');
+            });
+        }
+
+        // Animasyon efekti
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.package-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+
+            // Hover efekti için
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
