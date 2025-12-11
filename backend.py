@@ -181,36 +181,42 @@ def vip_api():
     if 'vip_logged_in' not in session:
         return redirect(url_for('vip_giris'))
     
-    # Session timeout kontrolü (60 dakika)
+    # Session timeout kontrolü
     if 'login_time' in session:
         login_time = datetime.fromisoformat(session['login_time'])
         if (datetime.now() - login_time).seconds > 3600:
             session.clear()
             return redirect(url_for('vip_giris'))
     
-    # API'leri kategorilere ayır
-    categories = {
-        "Temel Bilgiler": [],
-        "Aile Bilgileri": [],
-        "İş ve Finans": [],
-        "Diğer": []
-    }
+    # TÜM API'leri tek listede ve kategori bilgisi ekleyerek gönder
+    apis_with_category = []
     
+    # Temel Bilgiler
     for api in VIP_APIS:
         desc_lower = api['desc'].lower()
         
         if any(word in desc_lower for word in ['cinsiyet', 'yaş', 'din', 'burç', 'medeni', 'doğum']):
-            categories["Temel Bilgiler"].append(api)
+            category = "Temel"
         elif any(word in desc_lower for word in ['aile', 'baba', 'anne', 'kardeş', 'çocuk', 'amca', 'dayı', 'hala', 'teyze', 'kuzen', 'dede', 'nine', 'sülale']):
-            categories["Aile Bilgileri"].append(api)
-        elif any(word in desc_lower for word in ['iş', 'işyeri', 'verg', 'iban', 'finans', 'plaka']):
-            categories["İş ve Finans"].append(api)
+            category = "Aile"
+        elif any(word in desc_lower for word in ['iş', 'işyeri', 'sektör', 'giriş', 'ünvan']):
+            category = "İş"
+        elif any(word in desc_lower for word in ['verg', 'iban', 'finans', 'plaka']):
+            category = "Finans"
+        elif any(word in desc_lower for word in ['sağlık']):
+            category = "Sağlık"
         else:
-            categories["Diğer"].append(api)
+            category = "Diğer"
+        
+        # API'ye kategori bilgisi ekle
+        api_with_category = api.copy()
+        api_with_category['category'] = category
+        apis_with_category.append(api_with_category)
     
     return render_template(
         'vipapi.html', 
-        categories=categories,
+        apis=apis_with_category,  # Tek liste olarak gönder
+        categories={},  # Boş bırak ya da sil
         username=session.get('vip_username', 'Kullanıcı'),
         login_time=session.get('login_time'),
         total_apis=len(VIP_APIS)
